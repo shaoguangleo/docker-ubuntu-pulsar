@@ -5,6 +5,7 @@ LABEL version="0.1"
 LABEL description="Ubuntu Pulsar Image"
 
 COPY src/tempo-2017.07.29.tar.gz /tmp/
+COPY src/fftw-3.3.3.tar.gz /tmp/
 
 WORKDIR /usr/local/
 
@@ -24,4 +25,19 @@ RUN cd /tmp/\
     && echo "export PARDIR=/usr/local/tempo/tzpar" >> ~/.bashrc \
     && echo "export EPHDIR=/usr/local/tempo/ephem" >> ~/.bashrc \
     && echo "export OBSYS=/usr/local/tempo/obsys.dat" >> ~/.bashrc \
-    && rm -rf /tmp/tempo-2017.07.29.tar.gz
+    && cd /tmp \
+    && tar zxvf fftw-3.3.3.tar.gz \
+    && cd /tmp/fftw-3.3.3 \
+    && ./configure --enable-shared --enable-threads --enable-float\
+    && make -j 2\
+    && make install\
+    && make clean\
+    && ./configure --enable-shared --enable-threads --enable-long-double\
+    && make -j 4\
+    && make install\
+    && make clean\
+    && ./configure --enable-sse2\
+    && make -j 4\
+    && make install\
+    && make clean\
+    && rm -rf /tmp/*tar.gz
