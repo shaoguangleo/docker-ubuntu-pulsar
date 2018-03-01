@@ -1,43 +1,25 @@
-FROM shaoguangleo/ubuntu-pgplot:latest
+FROM shaoguangleo/ubuntu-tempo:latest
 MAINTAINER [Guo Shaoguang] <sgguo@shao.ac.cn>
 
 LABEL version="0.1"
 LABEL description="Ubuntu Pulsar Image"
 
-COPY src/tempo-2017.07.29.tar.gz /tmp/
-COPY src/fftw-3.3.3.tar.gz /tmp/
+COPY src/presto_v2.1.tar.gz /usr/local/presto/
+COPY src/presto_v2.1.tar.gz /tmp/
 
 WORKDIR /usr/local/
 
 RUN cd /tmp/\
-    && tar zxvf tempo-2017.07.29.tar.gz \
-    && cd /tmp/tempo \
-    && ./prepare  \
-    && ./configure --prefix=/usr/local/tempo \
-    && make  \
-    && make install \
-    && cp -rv clock ephem tzpar util /usr/local/tempo \
-    && cp tempo.hlp /usr/local/tempo \
-    && cp obsys.dat /usr/local/tempo \
-    && echo "export PATH=$PATH:/usr/local/tempo/bin" >> ~/.bashrc \
-    && echo "export TEMPO=/usr/local/tempo" >> ~/.bashrc \
-    && echo "export CLKDIR=/usr/local/tempo/clock" >> ~/.bashrc \
-    && echo "export PARDIR=/usr/local/tempo/tzpar" >> ~/.bashrc \
-    && echo "export EPHDIR=/usr/local/tempo/ephem" >> ~/.bashrc \
-    && echo "export OBSYS=/usr/local/tempo/obsys.dat" >> ~/.bashrc \
-    && cd /tmp \
-    && tar zxvf fftw-3.3.3.tar.gz \
-    && cd /tmp/fftw-3.3.3 \
-    && ./configure --enable-shared --enable-threads --enable-float\
-    && make -j 2\
-    && make install\
-    && make clean\
-    && ./configure --enable-shared --enable-threads --enable-long-double\
-    && make -j 4\
-    && make install\
-    && make clean\
-    && ./configure --enable-sse2\
-    && make -j 4\
-    && make install\
-    && make clean\
-    && rm -rf /tmp/*tar.gz
+    && cd /usr/local/presto/ \
+    && tar zxvf presto_v2.1.tar.gz \
+    && export PRESTO=/usr/local/presto \
+    && echo "export PRESTO=/usr/local/presto" >> ~/.bashrc \
+    && echo "export PATH=$PATH:/usr/local/presto/bin" >> ~/.bashrc \
+    && echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/presto/lib" >> ~/.bashrc \
+    && cd presto/src \
+    && make makewisdom \
+    && make prep \
+    && make \
+    && make mpi \
+    && make clean \
+    && rm -rf /tmp/*tar.gz /usr/local/presto/*.tar.gz
