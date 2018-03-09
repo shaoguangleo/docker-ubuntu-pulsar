@@ -13,13 +13,17 @@ RUN cd /tmp/\
     && cd /usr/local/ \
     && tar zxvf presto_v2.1.tar.gz \
     && export PRESTO=/usr/local/presto \
+    && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PRESTO/lib \
+    && export C_INCLUDE_PATH=$C_INCLUDE_PATH:$PRESTO/include \
     && echo "export PRESTO=/usr/local/presto" >> ~/.bashrc \
-    && echo "export PATH=$PATH:/usr/local/presto/bin" >> ~/.bashrc \
-    && echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/presto/lib" >> ~/.bashrc \
+    && echo "export PATH=$PATH:$PRESTO/bin" >> ~/.bashrc \
+    && echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PRESTO/lib" >> ~/.bashrc \
+    && echo "export C_INCLUDE_PATH=$C_INCLUDE_PATH:$PRESTO/include" >> ~/.bashrc \
+    && . ~/.bashrc \
     && cd presto/src \
-    && make makewisdom \
     && make prep \
+    && make makewisdom \
     && make \
     && make mpi \
     && make clean \
-    && rm -rf /tmp/*tar.gz /usr/local/presto/*.tar.gz
+    && rm -rf /tmp/*tar.gz /usr/local/*.tar.gz
